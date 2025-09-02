@@ -4,6 +4,15 @@ import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
 
+/**
+ * Julia Set Explorer
+ * - Left double-click → Zoom in at clicked point
+ * - Right double-click → Zoom out at clicked point
+ * - Drag → Pan the Mandelbrot view
+ * - Select zoom level
+ * - Select Iterations
+ */
+
 public class Julia extends JPanel implements MouseInputListener {
 
     JTextField juliaZoomField;

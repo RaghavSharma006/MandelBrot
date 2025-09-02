@@ -8,8 +8,11 @@ import java.awt.image.BufferedImage;
  * Mandelbrot Set Explorer
  * - Left double-click → Zoom in at clicked point
  * - Right double-click → Zoom out at clicked point
- * - Triple left-click → Open Julia set corresponding to clicked complex points
  * - Drag → Pan the Mandelbrot view
+ * - Select zoom level
+ * - Select Iterations
+ * - Get complex coordinates of any points
+ * - Generate Julia set of the complex number
  */
 public class MandelBrot extends JPanel implements MouseInputListener {
 
