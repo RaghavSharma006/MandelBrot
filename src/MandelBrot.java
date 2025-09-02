@@ -11,21 +11,28 @@ import java.awt.image.BufferedImage;
  * - Triple left-click → Open Julia set corresponding to clicked complex points
  * - Drag → Pan the Mandelbrot view
  */
-public class MandelBrot extends JPanel implements MouseWheelListener, MouseInputListener {
+public class MandelBrot extends JPanel implements MouseInputListener {
+
+    JTextField realField; //Reference to JFrame realField and imagField
+    JTextField imagField;
+    JTextField zoomField;
+    JTextField zoomLevelField;
+    JTextField maxIterationField;
 
     // Screen dimensions (dynamic from user’s monitor)
     final static int SCREEN_WIDTH;
     final static int SCREEN_HEIGHT;
 
     // Mandelbrot parameters
-    final static int MAX_ITERATIONS = 1000;  // max escape-time iterations
-    final static double ZOOM_FACTOR = 0.8;   // zoom factor per double-click
+    static int maxIterations = 5000;  // max escape-time iterations
+    static double zoomFactor = 0.8;   // zoom factor per double-click
+    static double zoomed=1;
 
     // Complex plane boundaries (initial view window)
     double xMin = -2.5;
     double xMax =  2.5;
     double yMin = -2.5;  // Mandelbrot lies roughly in [-2,2] + i[-2,2] but we have taken 2.5
-    double yMax =  2.5;
+    double yMax =  2.5;  // See Proof in 1.1
 
     // Buffered image to store computed fractal
     BufferedImage img;
@@ -38,12 +45,17 @@ public class MandelBrot extends JPanel implements MouseWheelListener, MouseInput
     }
 
     // Constructor: initializes image + mouse listeners
-    MandelBrot() {
-        img = new BufferedImage(SCREEN_WIDTH, SCREEN_HEIGHT, BufferedImage.TYPE_INT_RGB);
-        generate(); // generate Mandelbrot for initial view
+    MandelBrot(JTextField real, JTextField imaginary,JTextField zoomField,JTextField maxIterationField,JTextField zoomLevelField) {
+
+        this.realField=real;
+        this.imagField=imaginary;
+        this.zoomField=zoomField;
+        this.maxIterationField=maxIterationField;
+        this.zoomLevelField=zoomLevelField;
+
+        img =generate(); // generate Mandelbrot for initial view
 
         // Register event listeners for interactivity
-        addMouseWheelListener(this);
         addMouseListener(this);
         addMouseMotionListener(this);
     }
@@ -52,26 +64,36 @@ public class MandelBrot extends JPanel implements MouseWheelListener, MouseInput
      * Generates Mandelbrot fractal image for current [xMin, xMax] × [yMin, yMax] window.
      * Uses escape-time algorithm: z_{n+1} = z_n^2 + c
      */
-    void generate() {
+    BufferedImage generate() {
+        BufferedImage temp= new BufferedImage(SCREEN_WIDTH, SCREEN_HEIGHT, BufferedImage.TYPE_INT_RGB);
+
+        maxIterations=Integer.parseInt(maxIterationField.getText());
+
         for (int i = 0; i < SCREEN_WIDTH; i++) {
             for (int j = 0; j < SCREEN_HEIGHT; j++) {
 
                 // Convert pixel (i,j) into complex number (c_a + c_b i)
+                // Proof in 2.1
                 double c_a = xMin + (i / (double) SCREEN_WIDTH) * (xMax - xMin);
                 double c_b = yMin + (j / (double) SCREEN_HEIGHT) * (yMax - yMin);
 
-                double z_a = 0, z_b = 0; // z = 0 initial
+                double z_a = 0, z_b = 0; // z_n = 0 initial
                 int numberOfIterations = 0;
 
-                // Optimization: points outside main circle |c| > 2 cannot belong to Mandelbrot
+                // Equation ( (c_a * c_a) + (c_b * c_b) <= 4 ) proof in 1.2
                 if ((c_a * c_a) + (c_b * c_b) > 4) {
-                    Color rust = new Color(70, 65, 14); // Reddish-brown fallback
-                    img.setRGB(i, j, rust.getRGB());
+                    Color rust = new Color(28, 1, 0); // Reddish-brown fallback
+                    temp.setRGB(i, SCREEN_HEIGHT - 1 - j, rust.getRGB());
                     continue;
                 }
 
-                // Escape-time iteration: stop if |z| > 2 or max iterations reached
-                while ((z_a * z_a) + (z_b * z_b) <= 4 && numberOfIterations < MAX_ITERATIONS) {
+                // |Z_n|>2 point will reach infinity (See Proof in 1.3).
+                // We will use this to check if the point belongs to Mandelbrot set or not.
+
+
+                // Equation ( (z_a * z_a) + (z_b * z_b) <= 4 ) proof in 1.4
+                while ((z_a * z_a) + (z_b * z_b) <= 4 && numberOfIterations < maxIterations) {
+                    // Equations proof in 1.5
                     double zn_a = (z_a * z_a) - (z_b * z_b) + (c_a);
                     double zn_b = 2 * (z_a * z_b) + (c_b);
 
@@ -81,15 +103,18 @@ public class MandelBrot extends JPanel implements MouseWheelListener, MouseInput
                 }
 
                 // Coloring: black if inside Mandelbrot, colorful gradient if outside
-                int color = (numberOfIterations == MAX_ITERATIONS)
+                int color = (numberOfIterations == maxIterations)
                         ? 0
                         : Color.HSBtoRGB(numberOfIterations / 256f, 1,
                         numberOfIterations / (numberOfIterations + 8f));
 
                 // Flip vertically because screen coordinates differ from complex plane
-                img.setRGB(i, SCREEN_HEIGHT - 1 - j, color);
+                // As Image Buffer left top corner starts from 0,0 but screens bottom left is 0,0 so inverting image
+                temp.setRGB(i, SCREEN_HEIGHT - 1 - j, color);
+
             }
         }
+        return temp;
     }
 
     // Draw image onto JPanel
@@ -98,10 +123,6 @@ public class MandelBrot extends JPanel implements MouseWheelListener, MouseInput
         super.paintComponent(g);
         g.drawImage(img, 0, 0, null);
     }
-
-    // Currently unused (mouse wheel zoom could be added here)
-    @Override
-    public void mouseWheelMoved(MouseWheelEvent e) {}
 
     // State flag: avoid overlapping computations
     boolean isGenerating = false;
@@ -114,34 +135,37 @@ public class MandelBrot extends JPanel implements MouseWheelListener, MouseInput
      */
     @Override
     public void mouseClicked(MouseEvent e) {
-        // Triple left-click: show Julia set for clicked c
-        if (e.getButton() == MouseEvent.BUTTON1 && e.getClickCount() == 3) {
-            System.out.println("Triple click → Julia Set");
+        // Single left-click: show complex number real and imaginary values
+        if (e.getButton() == MouseEvent.BUTTON1 && e.getClickCount() == 1) {
 
-            JFrame juliaFrame = new JFrame();
-            Julia juliaPanel = new Julia(e.getX(), e.getY(), 0);
-            juliaFrame.add(juliaPanel);
-            juliaFrame.setSize(SCREEN_WIDTH, SCREEN_HEIGHT);
-            juliaFrame.setTitle("Julia Set for " + juliaPanel.c_a + " + " + juliaPanel.c_b + "i");
-            juliaFrame.setVisible(true);
-            juliaFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+            // Convert pixel (i,j) into complex number (c_a + c_b i)
+            // Proof in 2.1
+            double x = xMin + (e.getX() / (double) SCREEN_WIDTH) * (xMax - xMin);
+            //double y = yMax - (e.getY() / (double) SCREEN_HEIGHT) * (yMax - yMin); would used it but buffer and jFrame use opposite y so:
+            double y = yMax - (e.getY() / (double) SCREEN_HEIGHT) * (yMax - yMin);
+
+            realField.setText(String.valueOf(x)); //Update Text Field in Main Frame
+            imagField.setText(String.valueOf(y)); //Update Text Field in Main Frame
         }
 
         // Double click: zoom in/out
+        //Proof in 2.2
         if (e.getClickCount() == 2) {
             if (isGenerating || isDragging) return;
-            else isGenerating = true;
-
-            // Decide zoom direction: left = zoom in, right = zoom out
-            double scale = (e.getButton() == MouseEvent.BUTTON1) ? ZOOM_FACTOR : 1.0 / ZOOM_FACTOR;
-
-            // Find complex-plane coordinates of clicked pixel
-            double xCenter = xMin + (e.getX() / (double) SCREEN_WIDTH) * (xMax - xMin);
-            double yCenter = yMin + (e.getY() / (double) SCREEN_HEIGHT) * (yMax - yMin);
+            isGenerating = true;
 
             // Fractional position of click in window (0.0 = left/top, 1.0 = right/bottom)
+            // Ratios with respect to Screen dimensions
             double fx = e.getX() / (double) SCREEN_WIDTH;
-            double fy = e.getY() / (double) SCREEN_HEIGHT;
+            double fy = (SCREEN_HEIGHT-1-e.getY()) / (double) SCREEN_HEIGHT;
+
+            // Find complex-plane coordinates of clicked pixel
+            double xCenter = xMin + fx * (xMax - xMin);
+            double yCenter = yMin + fy * (yMax - yMin);
+
+            // Decide zoom direction: left = zoom in, right = zoom out
+            zoomFactor =1/(Double.parseDouble(zoomField.getText()));
+            double scale = (e.getButton() == MouseEvent.BUTTON1) ? zoomFactor : 1.0 / zoomFactor;
 
             // New window size after zoom
             double newWidth  = (xMax - xMin) * scale;
@@ -153,7 +177,10 @@ public class MandelBrot extends JPanel implements MouseWheelListener, MouseInput
             yMin = yCenter - (fy * newHeight);
             yMax = yMin + newHeight;
 
-            generate();  // recompute fractal
+            zoomed*=(e.getButton()==MouseEvent.BUTTON1) ? 1/zoomFactor : zoomFactor;
+            zoomLevelField.setText(String.valueOf(zoomed));
+
+            img=generate();  // recompute fractal
             repaint();   // redraw
             isGenerating = false;
         }
@@ -163,6 +190,7 @@ public class MandelBrot extends JPanel implements MouseWheelListener, MouseInput
     double dragStartX, dragStartY;
     boolean isDragging = false;
 
+
     // Mouse pressed: start drag
     @Override
     public void mousePressed(MouseEvent e) {
@@ -171,9 +199,40 @@ public class MandelBrot extends JPanel implements MouseWheelListener, MouseInput
         isDragging = true;
     }
 
+
+    /**
+     * Mouse drag → Pan the Mandelbrot view.
+     * Converts pixel displacement (dx, dy) into corresponding complex-plane shift,
+     * then updates the current window boundaries.
+     */
+    @Override
+    //Proof in 2.3
+    public void mouseDragged(MouseEvent e) {
+        if (!isDragging || isGenerating) return;
+
+        // Pixel movement
+        double dx = dragStartX - e.getX();
+        double dy = dragStartY - e.getY();
+
+        // Convert to complex plane shift
+        double xCenter = (dx / SCREEN_WIDTH) * (xMax - xMin);
+        double yCenter = (dy / SCREEN_HEIGHT) * (yMax - yMin);
+
+        // Shift view window
+        xMin += xCenter;
+        xMax += xCenter;
+        yMin -= yCenter;   // Notice minus because screen y is inverted
+        yMax -= yCenter;
+
+        dragStartX = e.getX();
+        dragStartY = e.getY();
+    }
+
     // Mouse released: stop drag
     @Override
     public void mouseReleased(MouseEvent e) {
+        img=generate();
+        repaint();
         isDragging = false;
     }
 
@@ -181,36 +240,6 @@ public class MandelBrot extends JPanel implements MouseWheelListener, MouseInput
     public void mouseEntered(MouseEvent e) {}
     @Override
     public void mouseExited(MouseEvent e) {}
-
-    /**
-     * Mouse drag → Pan the Mandelbrot view
-     */
-    @Override
-    public void mouseDragged(MouseEvent e) {
-        if (!isDragging || isGenerating) return;
-
-        // How much the mouse moved in pixels
-        double dx = dragStartX - e.getX();
-        double dy = dragStartY - e.getY();
-
-        // Convert pixel shift to complex-plane shift
-        double xCenter = (dx / SCREEN_WIDTH) * (xMax - xMin);
-        double yCenter = (dy / SCREEN_HEIGHT) * (yMax - yMin);
-
-        // Adjust window boundaries accordingly
-        xMin += xCenter;
-        xMax += xCenter;
-        yMin -= yCenter;  // minus because screen Y increases downward
-        yMax -= yCenter;
-
-        // Update drag start reference
-        dragStartX = e.getX();
-        dragStartY = e.getY();
-
-        generate(); // recompute
-        repaint();  // redraw
-    }
-
     @Override
     public void mouseMoved(MouseEvent e) {}
 }
