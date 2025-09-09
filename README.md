@@ -138,7 +138,7 @@ Notes:
 We have included mathematical proofs and derivations for the Mandelbrot and Julia set calculations, as well as for the interactive UI behavior. These are referenced in the code as comments:
 
 * **Mandel Brot and Julia set Equations:**
-  * 1.1: [Why c lies between -2 and 2 on the real axis, and -2i and 2i on the imaginary axis](Proofs/MandelBrotandJuliasetEquations\1.1.pdf)
+  * 1.1: [Why c lies between -2 and 2 on the real axis, and -2i and 2i on the imaginary axis](Proofs/Mandel%20Brot%20and%20Julia%20set%20Equations/1.1.pdf)
   * 1.2: [Distance Formula in the Complex Plane (ca * ca) + (cb * cb) > 4](Proofs/MandelBrotandJuliasetEquations\1.2.pdf)
   * 1.3: [Escape Condition Proof Using Triangle Inequality](Proofs/MandelBrotandJuliasetEquations\1.3.pdf)
   * 1.4: [Distance Formula for zₙ in the Complex Plane](Proofs/MandelBrotandJuliasetEquations\1.4.pdf)
