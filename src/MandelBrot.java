@@ -1,8 +1,12 @@
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.event.MouseInputListener;
 import java.awt.*;
 import java.awt.event.*;
 import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 
 /**
  * Mandelbrot Set Explorer
@@ -39,6 +43,7 @@ public class MandelBrot extends JPanel implements MouseInputListener {
 
     // Buffered image to store computed fractal
     BufferedImage img;
+    static int imageStoreNumber=1;
 
     // Static block to dynamically set display resolution
     static {
@@ -125,6 +130,19 @@ public class MandelBrot extends JPanel implements MouseInputListener {
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
         g.drawImage(img, 0, 0, null);
+    }
+
+    public void saveImageToFolder()  {
+        try {
+            String desktopPath = System.getProperty("user.home") + File.separator + "Desktop";
+            // desktopPath=""; Provide path where u want to save images.
+            File file = new File(desktopPath, "mandelbrot" + imageStoreNumber + ".png");
+            imageStoreNumber++;
+
+            ImageIO.write(img, "png", file);
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
     }
 
     // State flag: avoid overlapping computations

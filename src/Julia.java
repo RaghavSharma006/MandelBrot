@@ -1,8 +1,10 @@
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.event.MouseInputListener;
 import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
+import java.io.File;
 
 /**
  * Julia Set Explorer
@@ -41,6 +43,7 @@ public class Julia extends JPanel implements MouseInputListener {
 
     // The image buffer where we render pixels
     BufferedImage img;
+    static int imageStoreNumber=1;
 
     // Static initializer: detect screen resolution
     static {
@@ -121,6 +124,19 @@ public class Julia extends JPanel implements MouseInputListener {
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
         g.drawImage(img, 0, 0, null);
+    }
+
+    public void saveImageToFolder()  {
+        try {
+            String desktopPath = System.getProperty("user.home") + File.separator + "Desktop";
+            // desktopPath=""; Provide path where u want to save images.
+            File file = new File(desktopPath, "julia" + MandelBrot.imageStoreNumber + ".png");
+            imageStoreNumber++;
+
+            ImageIO.write(img, "png", file);
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
     }
 
     boolean isGenerating = false;

@@ -22,11 +22,11 @@ public class Main implements ActionListener {
 
         // ===== Left panel: Zoom + Iterations =====
         JPanel leftPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
-        leftPanel.add(new JLabel("Zoom:"));
+        leftPanel.add(new JLabel("Zoom \uD83D\uDD0E:"));
         zoomField = new JTextField("1.25", 5);
         leftPanel.add(zoomField);
 
-        leftPanel.add(new JLabel("Iterations:"));
+        leftPanel.add(new JLabel("  Iterations \uD83D\uDD01:"));
         maxIterationField = new JTextField("5000", 5);
         leftPanel.add(maxIterationField);
 
@@ -40,17 +40,26 @@ public class Main implements ActionListener {
         imagField = new JTextField("0.0", 13);
         centerPanel.add(imagField);
 
-        JButton generateBtn = new JButton("Generate");
+        JButton generateBtn = new JButton("⚙\uFE0F Generate");
+        generateBtn.setBackground(Color.WHITE);
+        generateBtn.setForeground(Color.BLACK);
         centerPanel.add(generateBtn);
 
-        // ===== Right panel: Zoom Level (read-only) =====
+
+        // ===== Right panel: Save + Zoom Level =====
         JPanel rightPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
-        rightPanel.add(new JLabel("Zoom Level:"));
+
+        JButton saveButton = new JButton("\uD83D\uDCC2 Save");
+        saveButton.setBackground(Color.WHITE);
+        saveButton.setForeground(Color.BLACK);
+        rightPanel.add(saveButton);
+
+        rightPanel.add(new JLabel("  Zoomed \uD83D\uDD0E:"));
         zoomLevelTextField = new JTextField("1", 10);
         zoomLevelTextField.setEditable(false);
         rightPanel.add(zoomLevelTextField);
 
-        // Add subpanels to main controls panel
+        // Add sub panels to main controls panel
         controls.add(leftPanel, BorderLayout.WEST);
         controls.add(centerPanel, BorderLayout.CENTER);
         controls.add(rightPanel, BorderLayout.EAST);
@@ -60,6 +69,8 @@ public class Main implements ActionListener {
 
         // Create Mandelbrot panel
         MandelBrot mandelbrotPanel = new MandelBrot(realField, imagField, zoomField, maxIterationField, zoomLevelTextField);
+        saveButton.addActionListener(e -> mandelbrotPanel.saveImageToFolder());
+
         frame.add(mandelbrotPanel, BorderLayout.CENTER);
 
         // Register Generate button listener
@@ -84,10 +95,34 @@ public class Main implements ActionListener {
             juliaFrame.setLayout(new BorderLayout());
 
             // Initialize local fields for Julia
-            JTextField localJuliaZoomField = new JTextField(zoomField.getText(), 5);
-            JTextField localJuliaMaxIterField = new JTextField(maxIterationField.getText(), 5);
-            JTextField localJuliaZoomLevelField = new JTextField(zoomLevelTextField.getText(), 10);
+            JTextField localJuliaZoomField = new JTextField("1.25", 5);
+            JTextField localJuliaMaxIterField = new JTextField("5000", 5);
+            JTextField localJuliaZoomLevelField = new JTextField("1", 10);
             localJuliaZoomLevelField.setEditable(false);
+
+
+            // Julia control panel
+            JPanel juliaControlsPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+            juliaControlsPanel.add(Box.createHorizontalStrut(50));
+            juliaControlsPanel.add(new JLabel("Zoom \uD83D\uDD0E:"));
+            juliaControlsPanel.add(localJuliaZoomField);
+
+            juliaControlsPanel.add(Box.createHorizontalStrut(30));
+            juliaControlsPanel.add(new JLabel("  Iterations \uD83D\uDD01:"));
+            juliaControlsPanel.add(localJuliaMaxIterField);
+
+            juliaControlsPanel.add(Box.createHorizontalStrut(900));
+
+            JButton saveButton = new JButton("\uD83D\uDCC2 Save");
+            saveButton.setBackground(Color.WHITE);
+            saveButton.setForeground(Color.BLACK);
+            juliaControlsPanel.add(saveButton);
+
+            juliaControlsPanel.add(Box.createHorizontalStrut(5));
+
+            juliaControlsPanel.add(new JLabel(" Zoomed \uD83D\uDD0E:"));
+            juliaControlsPanel.add(localJuliaZoomLevelField);
+
 
             // Create Julia panel
             Julia juliaPanel = new Julia(real, imag,
@@ -95,14 +130,8 @@ public class Main implements ActionListener {
                     localJuliaZoomLevelField,
                     localJuliaMaxIterField);
 
-            // Julia control panel
-            JPanel juliaControlsPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
-            juliaControlsPanel.add(new JLabel("Zoom:"));
-            juliaControlsPanel.add(localJuliaZoomField);
-            juliaControlsPanel.add(new JLabel("Iterations:"));
-            juliaControlsPanel.add(localJuliaMaxIterField);
-            juliaControlsPanel.add(new JLabel("Zoomed:"));
-            juliaControlsPanel.add(localJuliaZoomLevelField);
+
+            saveButton.addActionListener(k -> juliaPanel.saveImageToFolder());
 
             // Add components to Julia frame
             juliaFrame.add(juliaPanel, BorderLayout.CENTER);
