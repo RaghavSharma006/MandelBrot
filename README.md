@@ -139,15 +139,15 @@ We have included mathematical proofs and derivations for the Mandelbrot and Juli
 
 * **Mandel Brot and Julia set Equations:**
   * 1.1: [Why c lies between -2 and 2 on the real axis, and -2i and 2i on the imaginary axis](Proofs/Mandel%20Brot%20and%20Julia%20set%20Equations/1.1.pdf)
-  * 1.2: [Distance Formula in the Complex Plane (ca * ca) + (cb * cb) > 4](Proofs/MandelBrotandJuliasetEquations\1.2.pdf)
-  * 1.3: [Escape Condition Proof Using Triangle Inequality](Proofs/MandelBrotandJuliasetEquations\1.3.pdf)
-  * 1.4: [Distance Formula for zₙ in the Complex Plane](Proofs/MandelBrotandJuliasetEquations\1.4.pdf)
-  * 1.5: [Mandelbrot and Julia Set Iteration Equations](Proofs/MandelBrotandJuliasetEquations\1.5.pdf)
+  * 1.2: [Distance Formula in the Complex Plane (ca * ca) + (cb * cb) > 4](Proofs/Mandel%20Brot%20and%20Julia%20set%20Equations/1.2.pdf)
+  * 1.3: [Escape Condition Proof Using Triangle Inequality](Proofs/Mandel%20Brot%20and%20Julia%20set%20Equations/1.3.pdf)
+  * 1.4: [Distance Formula for zₙ in the Complex Plane](Proofs/Mandel%20Brot%20and%20Julia%20set%20Equations/1.4.pdf)
+  * 1.5: [Mandelbrot and Julia Set Iteration Equations](Proofs/Mandel%20Brot%20and%20Julia%20set%20Equations/1.5.pdf)
 
 * **UI/UX References:**
-  * 2.1: [Converting Pixel Coordinates to Complex Plane](Proofs\UIUXequations2\.1.pdf)
-  * 2.2: [Zoom Window Centring](Proofs\UIUXequations2\2.2.pdf)
-  * 2.3: [Drag translation](Proofs\UIUXequations2\2.3.pdf)
+  * 2.1: [Converting Pixel Coordinates to Complex Plane](Proofs\UIUX%20equations2\.1.pdf)
+  * 2.2: [Zoom Window Centring](Proofs\UIUX%20equations2\2.2.pdf)
+  * 2.3: [Drag translation](Proofs\UIUX%20equations2\2.3.pdf)
 
 *Full derivations can be found in the [`Proofs/`](Proofs/) folder as PDF files.*
 ---
