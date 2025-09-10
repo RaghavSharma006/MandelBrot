@@ -146,8 +146,8 @@ We have included mathematical proofs and derivations for the Mandelbrot and Juli
 
 * **UI/UX References:**
   * 2.1: [Converting Pixel Coordinates to Complex Plane](Proofs/UIUX%20equations/2.1.pdf)
-  * 2.2: [Zoom Window Centring](Proofs\UIUX%20equations/2.2.pdf)
-  * 2.3: [Drag translation](Proofs\UIUX%20equations/2.3.pdf)
+  * 2.2: [Zoom Window Centring](Proofs/UIUX%20equations/2.2.pdf)
+  * 2.3: [Drag translation](Proofs/UIUX%20equations/2.3.pdf)
 
 *Full derivations can be found in the [`Proofs/`](Proofs/) folder as PDF files.*
 ---
